@@ -74,3 +74,18 @@ test('restoreDatabase rejects invalid source without changing current database',
   }), /целостности/);
   assert.equal(fs.readFileSync(target, 'utf8'), 'OLD_DATABASE');
 });
+
+test('restoreDatabase can recover from a corrupt current database and preserves it as backup', (t) => {
+  const { root, Database } = setup();
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const source = path.join(root, 'source.sqlite');
+  const target = path.join(root, 'crm.sqlite');
+  fs.writeFileSync(source, 'NEW_DATABASE');
+  fs.writeFileSync(target, 'CORRUPT');
+  const result = restoreDatabase({
+    sourcePath: source, databasePath: target, backupDirectory: path.join(root, 'backups'), Database,
+    now: () => new Date('2026-10-14T10:01:00.000Z'),
+  });
+  assert.equal(fs.readFileSync(target, 'utf8'), 'NEW_DATABASE');
+  assert.equal(fs.readFileSync(result.backupPath, 'utf8'), 'CORRUPT');
+});
