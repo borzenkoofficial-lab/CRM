@@ -1,4 +1,4 @@
-name: Backup restore tests
+name: CRM and backup restore tests
 
 on:
   push:
@@ -6,12 +6,13 @@ on:
       - feature/struktura-crm-1.13.5-safe-restore
   pull_request:
     paths:
-      - 'src/backup-restore.cjs'
-      - 'tests/backup-restore.test.cjs'
+      - 'src/**'
+      - 'tests/**'
+      - 'package.json'
       - '.github/workflows/backup-restore-tests.yml'
 
 jobs:
-  backup-restore-tests:
+  crm-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,5 +21,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Run isolated restore tests
+      - name: Run restore safety tests
         run: node --test tests/backup-restore.test.cjs
+      - name: Run full CRM test suite when the source archive is imported
+        shell: bash
+        run: |
+          if node -e "const p = require('./package.json'); process.exit(p.scripts && p.scripts.test ? 0 : 1)"; then
+            npm test
+          else
+            echo 'Full CRM source is not imported yet; skipping app suite for this interim commit.'
+          fi
