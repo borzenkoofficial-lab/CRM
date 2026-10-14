@@ -16,7 +16,9 @@ Adds `src/backup-restore.cjs`, a guarded SQLite file restore utility with:
 - a pre-restore backup of the current database;
 - a staged replacement and rollback attempt on failure.
 
-The utility still needs integration with Electron main/preload/renderer and verification with the real `better-sqlite3` driver before use in the production CRM. Unit tests use a test adapter and are not a substitute for SQLite/Windows integration tests.
+Adds five isolated tests and a GitHub Actions workflow. The workflow completed successfully on Node.js 22: **5/5 tests passed** (run `38548948588`). These tests use a mock adapter and are not a substitute for real SQLite/Windows integration tests.
+
+The utility still needs integration with Electron main/preload/renderer and verification with the real `better-sqlite3` driver before use in the production CRM.
 
 ## Not claimed as completed
 
