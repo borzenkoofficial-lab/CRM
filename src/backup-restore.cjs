@@ -65,7 +65,7 @@ function restoreDatabase({
   let movedCurrent = false;
   try {
     if (fs.existsSync(target)) {
-      inspectDatabase(target, Database, requiredTables);
+      // Preserve the current file even if it is corrupt; restoring may be the recovery path.
       fs.copyFileSync(target, backupPath, fs.constants.COPYFILE_EXCL);
     }
     fs.copyFileSync(source, stagedPath, fs.constants.COPYFILE_EXCL);
